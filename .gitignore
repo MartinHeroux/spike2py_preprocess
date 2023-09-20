@@ -1,0 +1,14 @@
+venv
+.idea
+tests/data/
+tests/study/
+tests/study2/
+*.tar.gz
+*.egg-info
+.pytest_chache/
+dist
+__pycache__/
+.tox/
+build/
+
+

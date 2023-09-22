@@ -106,8 +106,52 @@ Finally, for all trials in a study, **spike2py_preprocess** looks for `study_pre
 
 ### Controlling the preprocessing
 
-By including `study_preprocess.json`, `subject_preprocess.json` and `<trialname.mat>_preprocess.json` files in a given file structure, it is possible to provide a general preprocess scheme, but that can be overridden for a given subject or a given trial.
+By including `study_preprocess.json`, `subject_preprocess.json` and `<trialname.mat>_preprocess.json` files in a given file structure, 
+it is possible to provide a general preprocess scheme, but that can be overridden for a given subject or a given trial.
 
+Below is an example of what could be included in a preprocess file. 
+As you can see, each item is the name of a channel that exists in the `.mat` file. 
+
+For each channel, a specific preprocessing step is specified.
+At present, the preprocessing steps that are possible are those included in the `spike2py` 
+[SignalProcessing](https://spike2py.readthedocs.io/en/latest/pages/reference_guides.html#sig-proc-signalprocessing)
+mixin class.
+
+The keys are the call to the preprocessing method, and the values are the inputs to those methods (if required).
+
+```json
+{
+  "Fdi": {
+    "remove_mean": "",
+    "lowpass": "cutoff=200"
+  },
+  "W_Ext": {
+    "remove_mean": "",
+    "bandstop": "cutoff = [49, 51]"
+  },
+  "Stim": {
+    "lowpass": "cutoff=20, order=8"
+    }
+}
+
+```
+#### IMPORTANT
+
+Note that, in our example above, the channels were specified as `"channels": ["FDI", "W_EXT", "stim"]`,
+but here they are specified as `Fdi`, `W_Ext`, and `Stim`. The reason for this is the researchers often used a wide
+variety of styles to label channels, sometimes with ALLCAPS, other times with camel_case, or a combination of many.
+To standardise things, `spike2py` applied TitleCase to each of the channel names.  If you are not 100% certain what the 
+resulting channel name will be, simply apply `spike2py_preprocess` with you preprocess specified. This will result in a 
+pickle (`.pkl`) file that can be opened with `spike2py`. 
+
+```python
+import spike2py as s2p
+from pathlib import Path
+
+tutorial = s2p.trial.load(file=Path('data.pkl'))
+```
+
+Now if you simply type `tutorial` and hit return, you will see information about the data, include the channel names.
 ## File structure
 
 Below is an example of the required file/folder structure for **spike2py_preprocess**.
@@ -118,6 +162,16 @@ Similarly, at the subject level, `sub02` has a `subject_preprocess.json` file. T
 
 Finally, because `sub01` does not include a dedicated `.json` file, their data would simply be read and saved as `.pkl` files if their data was analysed on their own. 
 However, if **spike2py_preprocess** was used to preprocess all trials in the study, trials from `sub01` would be preprocessed with the details provided in `study_preprocess.json`.
+
+
+
+### Study folder structure and required files
+
+Below is an example study file structure. The study folder can have whatever name you like, `study1` in this case.
+Similarly, the subject folders can have whatever names you like, but they should match the list of subjects you include
+in the `study_info.json` file (see below for more details).
+
+The raw data, in `.mat` format for each subject **must** be located in a folder with the name `raw`.
 
 ```bash
 

@@ -239,9 +239,11 @@ def _extract_section_data(data, section_name, section_times, channels):
 
     section_data = copy.deepcopy(data)
     for channel_name, channel_type in channels:
-        section_data = EXTRACT_SECTION_PER_CHANNEL_TYPE[channel_type](
-            section_data, channel_name, section_times
-        )
+        channel = getattr(data, channel_name)
+        if len(channel.times) > 0:
+            section_data = EXTRACT_SECTION_PER_CHANNEL_TYPE[channel_type](
+                section_data, channel_name, section_times
+            )
 
     return section_data
 

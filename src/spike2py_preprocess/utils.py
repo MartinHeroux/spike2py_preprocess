@@ -2,6 +2,9 @@ import sys
 import json
 from pathlib import Path
 from typing import Union
+import shutil
+
+from PyPDF2 import PdfMerger
 
 import spike2py
 
@@ -67,3 +70,18 @@ def get_preprocess_info(preprocess_file, preprocess_info=None):
         return read_json(preprocess_file)
     else:
         return preprocess_info
+
+
+def merge_pdfs(path):
+    merger = PdfMerger()
+    temp = path / 'temp'
+    temp.mkdir()
+    for item in path.iterdir():
+        if item.suffix == '.pdf':
+            temp_file = temp / (item.stem + '.pdf')
+            merger.append(item)
+            print(f'adding {item}')
+            item.rename(temp_file)
+    merger.write(path / (path.parent.parent.stem + '.pdf'))
+    merger.close()
+    shutil.rmtree(temp)

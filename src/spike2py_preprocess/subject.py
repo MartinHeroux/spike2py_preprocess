@@ -27,7 +27,9 @@ class SubjectPaths:
     def create(self):
         self.raw = self.home / "raw"
         self.proc = self.home / "proc"
-        self.figures = self.home / "figures"
+        self.figures = self.home / "figures" / "preprocess"
+        if not self.figures.exists():
+            self.figures.mkdir()
 
 
 def subject(
@@ -61,6 +63,8 @@ def subject(
     )
     print(f"\tProcessing {subject_info['subject_id']}")
     _preprocess_trials(paths, subject_info, preprocess_info, study_info, plot)
+    if plot:
+        utils.merge_pdfs(paths.figures)
 
 
 def gen_paths(subject_path):

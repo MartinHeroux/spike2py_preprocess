@@ -29,7 +29,7 @@ class SubjectPaths:
         self.proc = self.home / "proc"
         self.figures = self.home / "figures" / "preprocess"
         if not self.figures.exists():
-            self.figures.mkdir()
+            self.figures.mkdir(parents=True)
 
 
 def subject(

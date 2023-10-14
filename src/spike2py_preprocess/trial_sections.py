@@ -16,7 +16,7 @@ def extract(data, plot=False):
         if plot:
             trial.plot_data(section_data)
         section_data.save()
-        print(f"\t\tSaved {section_data.info.name}.pkl")
+        print(f"\t\t\tSaved {section_data.info.name}.pkl")
 
 
 def _get_section_details(data):

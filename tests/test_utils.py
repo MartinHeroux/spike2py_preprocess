@@ -25,3 +25,6 @@ def test_read_FileNotFoundError_not_strict(capsys):
     utils.read_json(file, strict=False)
     output = capsys.readouterr().out
     assert output == f"{file} does not exist.\n"
+
+
+# TODO: Add test for new pdf merge function

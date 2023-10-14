@@ -62,9 +62,19 @@ def subject(
         paths.home / SUBJECT_PREPROCESS_FILE, preprocess_info
     )
     print(f"\tProcessing {subject_info['subject_id']}")
+    # TODO: Add test where subject channels are different from study channels
+    study_info = _merge_subject_study_info(study_info, subject_info)
     _preprocess_trials(paths, subject_info, preprocess_info, study_info, plot)
     if plot:
         utils.merge_pdfs(paths.figures)
+
+
+def _merge_subject_study_info(study_info, subject_info):
+    subject_info_keys = list(subject_info.keys())
+    for key, value in study_info.items():
+        if key in subject_info_keys:
+            study_info[key] = subject_info[key]
+    return study_info
 
 
 def gen_paths(subject_path):
@@ -75,6 +85,14 @@ def gen_paths(subject_path):
 
 def _preprocess_trials(paths, subject_info, preprocess_info, study_info, plot):
     for trial_ in subject_info["trials"].values():
+        trial_info_file = paths.raw / (trial_["file"].split('.')[0] + '_trial_info.json')
+        trial_info_json = utils.read_json(trial_info_file, strict=False)
+
+        if trial_info_json is not None:
+            trial_["name"] = trial_info_json["name"]
+            if "channels" in list(trial_info_json.keys()):
+                trial_["channels"] = trial_info_json["channels"]
+
         channels = _get_channels(trial_, study_info)
         trial_info = s2p.trial.TrialInfo(
             file=paths.raw / trial_["file"],
@@ -82,6 +100,7 @@ def _preprocess_trials(paths, subject_info, preprocess_info, study_info, plot):
             name=trial_["name"],
             subject_id=paths.home.name,
             path_save_trial=paths.proc,
+            path_save_figures=paths.figures
         )
         trial.trial(trial_info, preprocess_info, plot)
 
@@ -93,7 +112,7 @@ def _get_channels(trial_, study_info):
     look to see if the channels to extract are specified. If not,
     return None, which means all available channels will be outputed.
     When processing data for an entire study and there is no channels
-    specified in trial_ (which comes from subject_info.json), then
+    specified in trial_ (which comes from old.json), then
     look to see if there are channels specified in study_info; if yes,
     use these; if no, return None and use all channels.
     """

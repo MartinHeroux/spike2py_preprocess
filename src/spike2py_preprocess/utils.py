@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import Union
 import shutil
+import platform
 
 from PyPDF2 import PdfMerger
 
@@ -36,9 +37,12 @@ def read_json(json_path: Path, strict: bool = True) -> Union[dict, None]:
     """
     try:
         with open(json_path, "r") as file:
-            return json.load(file)
+             data = json.load(file)
+        message = f"\n\t\t{json_path.name} exist!"
+        print(message)
+        return data
     except FileNotFoundError:
-        message = f"{json_path} does not exist."
+        message = f"\n\t\t{json_path.name} does not exist."
         print(message)
         if strict:
             sys.exit(1)
@@ -73,15 +77,24 @@ def get_preprocess_info(preprocess_file, preprocess_info=None):
 
 
 def merge_pdfs(path):
-    merger = PdfMerger()
-    temp = path / 'temp'
-    temp.mkdir()
-    for item in path.iterdir():
-        if item.suffix == '.pdf':
-            temp_file = temp / (item.stem + '.pdf')
-            merger.append(item)
-            print(f'adding {item}')
-            item.rename(temp_file)
-    merger.write(path / (path.parent.parent.stem + '.pdf'))
-    merger.close()
-    shutil.rmtree(temp)
+    if platform.system() == 'Windows':
+        merger = PdfMerger()
+        for item in path.iterdir():
+            if item.suffix == '.pdf':
+                merger.append(item)
+                print(f'adding {item}')
+        merger.write(path / (path.parent.parent.stem + '.pdf'))
+        merger.close()
+    else:
+        merger = PdfMerger()
+        temp = path / 'temp'
+        temp.mkdir()
+        for item in path.iterdir():
+            if item.suffix == '.pdf':
+                temp_file = temp / (item.stem + '.pdf')
+                merger.append(item)
+                print(f'adding {item}')
+                item.rename(temp_file)
+        merger.write(path / (path.parent.parent.stem + '.pdf'))
+        merger.close()
+        shutil.rmtree(temp)

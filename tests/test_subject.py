@@ -38,7 +38,7 @@ def test_subject_paths_create_method(tmp_path):
     paths.create()
     assert paths.raw == tmp_path / "raw"
     assert paths.proc == tmp_path / "proc"
-    assert paths.figures == tmp_path / "figures"
+    assert paths.figures == tmp_path / "figures" / "preprocess"
 
 
 def test_preprocess_subject_no_subject_preprocess(sub01_paths, channels_file1):

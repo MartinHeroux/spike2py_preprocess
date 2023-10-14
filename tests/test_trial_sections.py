@@ -192,3 +192,6 @@ def test_extract_section_check_event(data_with_sections, section_times, len_mmax
         data_with_sections, "mmax", section_times
     )
     assert len(section_data.Mmax.times) == len_mmax_times
+
+
+# TODO: Add test for when stim channel present but does not have any `times`

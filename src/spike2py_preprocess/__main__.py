@@ -14,7 +14,7 @@ app = typer.Typer(
 
 
 @app.command()
-def trial(trial_info_json: Path, plot: bool = False):
+def trial(trial_info_json: str, plot: bool = False):
     """Preprocess trial
 
     trial_info_json: Path to json file containing details required by spike2py.trial.TrialInfo
@@ -30,6 +30,7 @@ def trial(trial_info_json: Path, plot: bool = False):
     "path_save_figures": "/home/maple/study1/sub01/figures",
     }
     """
+    trial_info_json = Path(trial_info_json)
     trial_info = utils.get_trial_info(trial_info_json)
     trial_.trial(trial_info, plot=plot)
 
@@ -40,6 +41,7 @@ def subject(subject_path: str, plot: bool = False):
 
     subject_path: path to subject folder
     """
+    subject_path = Path(subject_path)
     subject_.subject(subject_path, plot=plot)
 
 
@@ -48,6 +50,7 @@ def study(study_path, plot: bool = False):
     """Preprocess all trials from all subjects for a study
 
     study_path: path to study folder"""
+    study_path = Path(study_path)
     study_.study(study_path, plot=plot)
 
 
